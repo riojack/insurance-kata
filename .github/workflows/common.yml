@@ -7,19 +7,31 @@ jobs:
         pull-requests: write
       steps:
         - uses: actions/checkout@v5
+
         - uses: actions/setup-java@v5
           name: 'Set up Java 21'
           with:
             distribution: 'temurin'
             java-version: '21'
+
         - name: 'Run JaCoCo Coverage'
           run: ./gradlew jacocoTestReport --no-daemon
+
         - name: 'Create PR Comment with Coverage'
           id: jacoco
           uses: madrapps/jacoco-report@v1.7.2
           with:
+            title: Coverage
+            update-comment: true
             min-coverage-overall: '100'
             min-coverage-changed-files: '100'
             token: ${{ secrets.GITHUB_TOKEN }}
             paths: |
               ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
+
+        - name: 'Fail If Coverage Too Low'
+          if: ${{ steps.jacoco.outputs.coverage-overall < 100.0 }}
+          uses: actions/github-script@v6
+          with:
+            script: |
+              core.setFailed('Failed because coverage is under 100%.')
