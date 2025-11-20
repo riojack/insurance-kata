@@ -9,6 +9,7 @@
 plugins {
     application
     id("com.diffplug.spotless") version "8.1.0"
+    id("java")
     id("jacoco")
 }
 
@@ -34,6 +35,18 @@ testing {
 
 jacoco {
     toolVersion = "0.8.14"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
