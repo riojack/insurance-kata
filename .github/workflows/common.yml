@@ -13,7 +13,7 @@ jobs:
             distribution: 'temurin'
             java-version: '21'
         - name: 'Run JaCoCo Coverage'
-          run: ./gradlew testCoverage --no-daemon
+          run: ./gradlew jacocoTestReport --no-daemon
         - name: 'Create PR Comment with Coverage'
           id: jacoco
           uses: madrapps/jacoco-report@v1.7.2
