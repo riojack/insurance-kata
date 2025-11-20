@@ -1,5 +1,10 @@
 name: Insurance Kata Common CI
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, reopened]
+  push:
+    branches:
+      - 'main'
 jobs:
   check-formatting:
     name: 'Check Formatting'
