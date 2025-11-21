@@ -20,20 +20,35 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
         }
 
         Policy policy = getPolicy(claim);
+
+        boolean approved = false;
+        BigDecimal payoutAmount = BigDecimal.ZERO;
+        String reasonCode = getReasonCode(claim, policy);
+
+        if ("".equals(reasonCode)) {
+            approved = true;
+            payoutAmount = calculatePayout(claim, policy);
+        }
+
+        return new Payout(approved, payoutAmount, reasonCode);
+    }
+
+    private static String getReasonCode(Claim claim, Policy policy) {
         boolean withinCoverageTimeframe = isWithinCoverageTimeframe(claim, policy);
         boolean withinCoverageAmount = isClaimWithinCoverage(claim, policy);
         boolean coveredByPolicy = policy.coveredIncidents().contains(claim.incidentType());
 
-        if (withinCoverageTimeframe && withinCoverageAmount && coveredByPolicy) {
-            BigDecimal payoutAmount = calculatePayout(claim, policy);
-            return new Payout(true, payoutAmount, "");
-        } else if (!withinCoverageTimeframe) {
-            return new Payout(false, BigDecimal.ZERO, "POLICY_INACTIVE");
+        String reason = "";
+
+        if (!withinCoverageTimeframe) {
+            reason = "POLICY_INACTIVE";
         } else if (!coveredByPolicy) {
-            return new Payout(false, BigDecimal.ZERO, "NOT_COVERED");
+            reason = "NOT_COVERED";
+        } else if (!withinCoverageAmount) {
+            reason = "NEED_TO_TEST_THIS";
         }
 
-        return new Payout(false, BigDecimal.ZERO, "");
+        return reason;
     }
 
     private static boolean isWithinCoverageTimeframe(Claim claim, Policy policy) {
