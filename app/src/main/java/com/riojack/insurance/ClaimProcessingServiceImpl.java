@@ -15,22 +15,33 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
 
     @Override
     public Payout getClaimPayout(Claim claim) {
-        if (claim.amountClaimed().compareTo(BigDecimal.ZERO) < 0) {
+        if (isNonNegativeClaimAmount(claim)) {
             return new Payout(true, BigDecimal.ZERO, "ZERO_PAYOUT");
         }
 
-        Policy policy =
-                policies.stream()
-                        .filter(p -> p.policyId().equals(claim.policyId()))
-                        .findFirst()
-                        .get();
+        Policy policy = getPolicy(claim);
 
-        if (claim.amountClaimed().compareTo(policy.coverageLimit()) < 0) {
+        if (isClaimWithinCoverage(claim, policy)) {
             BigDecimal payoutAmount = calculatePayout(claim, policy);
             return new Payout(true, payoutAmount, "");
         }
 
         return new Payout(false, BigDecimal.ZERO, "");
+    }
+
+    private static boolean isNonNegativeClaimAmount(Claim claim) {
+        return claim.amountClaimed().compareTo(BigDecimal.ZERO) < 0;
+    }
+
+    private static boolean isClaimWithinCoverage(Claim claim, Policy policy) {
+        return claim.amountClaimed().compareTo(policy.coverageLimit()) < 0;
+    }
+
+    private Policy getPolicy(Claim claim) {
+        return policies.stream()
+                .filter(p -> p.policyId().equals(claim.policyId()))
+                .findFirst()
+                .get();
     }
 
     private static BigDecimal calculatePayout(Claim claim, Policy policy) {
