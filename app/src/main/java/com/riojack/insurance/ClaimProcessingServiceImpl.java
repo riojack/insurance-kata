@@ -1,6 +1,5 @@
 package com.riojack.insurance;
 
-import com.riojack.insurance.exceptions.ClaimValidationException;
 import com.riojack.insurance.pojos.Claim;
 import com.riojack.insurance.pojos.Payout;
 import com.riojack.insurance.pojos.Policy;
@@ -17,7 +16,7 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
     @Override
     public Payout getClaimPayout(Claim claim) {
         if (claim.amountClaimed().compareTo(BigDecimal.ZERO) < 0) {
-            throw new ClaimValidationException();
+            return new Payout(true, BigDecimal.ZERO, "ZERO_PAYOUT");
         }
 
         Policy policy =

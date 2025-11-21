@@ -5,7 +5,6 @@ import static com.riojack.insurance.TestData.POLICY_A_ID;
 import static java.util.List.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.riojack.insurance.exceptions.ClaimValidationException;
 import com.riojack.insurance.pojos.Claim;
 import com.riojack.insurance.pojos.Payout;
 import java.math.BigDecimal;
@@ -22,10 +21,12 @@ public class ClaimProcessingServiceImplTest {
     }
 
     @Test
-    void whenAmountClaimedIsNegativeThenThrowException() {
+    void whenAmountClaimedIsNegativeThenReturnZeroWithZeroPayoutReasonCode() {
         Claim claim =
                 new Claim(POLICY_A_ID, "accident", LocalDateTime.now(), new BigDecimal("-0.01"));
-        assertThrows(ClaimValidationException.class, () -> service.getClaimPayout(claim));
+        Payout payout = service.getClaimPayout(claim);
+        assertEquals(BigDecimal.ZERO, payout.payout());
+        assertEquals("ZERO_PAYOUT", payout.reasonCode());
     }
 
     @Test
