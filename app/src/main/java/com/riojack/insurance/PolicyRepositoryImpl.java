@@ -12,6 +12,9 @@ public class PolicyRepositoryImpl implements PolicyRepository {
 
     @Override
     public Policy getPolicyById(String policyId) {
-        return policies.stream().filter(p -> p.policyId().equals(policyId)).findFirst().get();
+        return policies.stream()
+                .filter(p -> p.policyId().equals(policyId))
+                .findFirst()
+                .orElse(null);
     }
 }
