@@ -30,11 +30,13 @@ public class ClaimProcessingServiceImplTest {
     }
 
     @Test
-    void whenClaimAmountIsLessThanPolicyCoverageThenPayoutIsMade() {
+    void whenClaimAmountIsLessThanPolicyCoverageThenThePayoutIsMadeWithDeductibleSubtracted() {
         Claim claim =
                 new Claim(POLICY_A_ID, "accident", LocalDateTime.now(), new BigDecimal("1000.00"));
         Payout payout = service.getClaimPayout(claim);
-        assertEquals(new BigDecimal("1000.00"), payout.payout());
+
+        BigDecimal expected = new BigDecimal("1000.00").subtract(POLICY_A.deductible());
+        assertEquals(expected, payout.payout());
     }
 
     @Test
