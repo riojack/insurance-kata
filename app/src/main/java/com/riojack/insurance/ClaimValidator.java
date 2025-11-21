@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class ClaimValidator {
+    private ClaimValidator() {}
+
     public static String getReasonCode(Claim claim, Policy policy, BigDecimal payoutAmount) {
         String reason = "";
 
