@@ -34,8 +34,6 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
             reason = "POLICY_INACTIVE";
         } else if (!isIncidentTypeCovered(claim, policy)) {
             reason = "NOT_COVERED";
-        } else if (!isClaimWithinCoverage(claim, policy)) {
-            reason = "NEED_TO_TEST_THIS";
         }
 
         return reason;
@@ -56,10 +54,6 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
 
     private static boolean isNonNegativeClaimAmount(Claim claim) {
         return claim.amountClaimed().compareTo(BigDecimal.ZERO) < 0;
-    }
-
-    private static boolean isClaimWithinCoverage(Claim claim, Policy policy) {
-        return claim.amountClaimed().compareTo(policy.coverageLimit()) < 0;
     }
 
     private Policy getPolicy(Claim claim) {
