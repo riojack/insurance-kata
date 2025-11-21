@@ -10,5 +10,4 @@ public record Policy(
         LocalDateTime endDate,
         BigDecimal deductible,
         BigDecimal coverageLimit,
-        List<String> coveredIncidents) {
-}
+        List<String> coveredIncidents) {}
