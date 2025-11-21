@@ -20,4 +20,9 @@ public class TestUtils {
         return new Claim(
                 claim.policyId(), incidentType, claim.incidentDate(), claim.amountClaimed());
     }
+
+    public static Claim claimWithPolicyId(Claim claim, String policyId) {
+        return new Claim(
+                policyId, claim.incidentType(), claim.incidentDate(), claim.amountClaimed());
+    }
 }
