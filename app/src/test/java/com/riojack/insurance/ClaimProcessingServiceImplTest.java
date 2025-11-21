@@ -31,6 +31,16 @@ public class ClaimProcessingServiceImplTest {
     }
 
     @Test
+    void whenAmountClaimedComesToZeroPayThenReturnZeroWithZeroPayoutReasonCode() {
+        Claim claim = claimWithAmount(CLAIM_A, POLICY_A.deductible());
+        Payout payout = service.getClaimPayout(claim);
+
+        assertFalse(payout.approved());
+        assertEquals(BigDecimal.ZERO, payout.payout());
+        assertEquals("ZERO_PAYOUT", payout.reasonCode());
+    }
+
+    @Test
     void whenClaimAmountIsLessThanPolicyCoverageThenThePayoutIsMadeWithDeductibleSubtracted() {
         Claim claim = claimWithAmount(CLAIM_A, new BigDecimal("1000.00"));
         Payout payout = service.getClaimPayout(claim);
