@@ -1,7 +1,8 @@
 package com.riojack.insurance;
 
 import com.riojack.insurance.pojos.Claim;
+import com.riojack.insurance.pojos.Payout;
 
 public interface ClaimProcessingService {
-    void getClaimPayout(Claim claim);
+    Payout getClaimPayout(Claim claim);
 }
