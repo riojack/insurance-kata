@@ -1,5 +1,6 @@
 package com.riojack.insurance;
 
+import static java.util.List.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.riojack.insurance.exceptions.ClaimValidationException;
@@ -18,7 +19,16 @@ public class ClaimProcessingServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        service = new ClaimProcessingServiceImpl();
+        service = new ClaimProcessingServiceImpl(of(
+                new Policy(
+                        POLICY_ID_1,
+                        LocalDateTime.of(2023, 1, 1, 0,0),
+                        LocalDateTime.of(2024, 1, 1, 11,59),
+                        new BigDecimal("500.00"),
+                        new BigDecimal("5000.00"),
+                        of("accident")
+                )
+        ));
     }
 
     @Test
