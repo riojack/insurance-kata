@@ -17,7 +17,7 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
     public Payout getClaimPayout(Claim claim) {
         Policy policy = getPolicy(claim);
 
-        BigDecimal payoutAmount = calculatePayout(claim, policy);
+        BigDecimal payoutAmount = calculatePayout(claim.amountClaimed(), policy);
         String reasonCode = ClaimValidator.getReasonCode(claim, policy, payoutAmount);
         boolean approved = "".equals(reasonCode);
         payoutAmount = approved ? payoutAmount : BigDecimal.ZERO;
@@ -32,7 +32,7 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
                 .get();
     }
 
-    private static BigDecimal calculatePayout(Claim claim, Policy policy) {
-        return claim.amountClaimed().subtract(policy.deductible());
+    private static BigDecimal calculatePayout(BigDecimal amountClaimed, Policy policy) {
+        return amountClaimed.subtract(policy.deductible());
     }
 }
