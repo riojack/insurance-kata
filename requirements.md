@@ -80,7 +80,7 @@ Each claim evaluation should return a result with the following fields:
 
 ### Business Rules
 
-- The policy must be active on the `incidentDate`
+- ✅ The policy must be active on the `incidentDate`
 - The `incidentType` must be included in the policy’s `coveredIncidents`
 - ✅ Payout = `amountClaimed - deductible`
 - If payout is zero or negative, return 0 with reasonCode: `ZERO_PAYOUT`
