@@ -22,12 +22,15 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
         Policy policy = getPolicy(claim);
         boolean withinCoverageTimeframe = isWithinCoverageTimeframe(claim, policy);
         boolean withinCoverageAmount = isClaimWithinCoverage(claim, policy);
+        boolean coveredByPolicy = policy.coveredIncidents().contains(claim.incidentType());
 
-        if (withinCoverageTimeframe && withinCoverageAmount) {
+        if (withinCoverageTimeframe && withinCoverageAmount && coveredByPolicy) {
             BigDecimal payoutAmount = calculatePayout(claim, policy);
             return new Payout(true, payoutAmount, "");
         } else if (!withinCoverageTimeframe) {
             return new Payout(false, BigDecimal.ZERO, "POLICY_INACTIVE");
+        } else if (!coveredByPolicy) {
+            return new Payout(false, BigDecimal.ZERO, "NOT_COVERED");
         }
 
         return new Payout(false, BigDecimal.ZERO, "");
