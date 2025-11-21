@@ -54,6 +54,16 @@ public class ClaimProcessingServiceImplTest {
     }
 
     @Test
+    void whenPayoutAmountIsMoreThanPolicyCoverageThenPayoutIsNotMade() {
+        Claim claim = claimWithAmount(CLAIM, new BigDecimal("5501.00"));
+        Payout payout = service.getClaimPayout(claim);
+
+        assertFalse(payout.approved());
+        assertEquals(BigDecimal.ZERO, payout.payout());
+        assertEquals("PAYOUT_EXCEEDS_COVERAGE", payout.reasonCode());
+    }
+
+    @Test
     void whenClaimIsBeforePolicyCoverageTimeframeThenPayoutNotGiven() {
         Claim claim = claimWithIncidentDate(CLAIM, POLICY_ALL_COVERAGE.startDate().minusDays(2));
         Payout payout = service.getClaimPayout(claim);
