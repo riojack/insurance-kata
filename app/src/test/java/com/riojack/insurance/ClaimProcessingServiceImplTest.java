@@ -2,7 +2,7 @@ package com.riojack.insurance;
 
 import static com.riojack.insurance.TestData.POLICY_A;
 import static com.riojack.insurance.TestData.POLICY_A_ID;
-import static java.util.List.*;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.riojack.insurance.pojos.Claim;
@@ -81,5 +81,16 @@ public class ClaimProcessingServiceImplTest {
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
         assertEquals("POLICY_INACTIVE", payout.reasonCode());
+    }
+
+    @Test
+    void whenClaimIncidentTypeIsNotCoveredThenPayoutNotGiven() {
+        Claim claim = new Claim(POLICY_A_ID, "theft", CLAIM_DATE, new BigDecimal("6000.00"));
+
+        Payout payout = service.getClaimPayout(claim);
+
+        assertFalse(payout.approved());
+        assertEquals(BigDecimal.ZERO, payout.payout());
+        assertEquals("NOT_COVERED", payout.reasonCode());
     }
 }
