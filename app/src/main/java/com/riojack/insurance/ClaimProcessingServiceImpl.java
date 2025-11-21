@@ -16,14 +16,14 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
     @Override
     public Payout getClaimPayout(Claim claim) {
         if (isNonNegativeClaimAmount(claim)) {
-            return new Payout(true, BigDecimal.ZERO, "ZERO_PAYOUT");
+            return new Payout(false, BigDecimal.ZERO, "ZERO_PAYOUT");
         }
 
         Policy policy = getPolicy(claim);
         boolean withinCoverageTimeframe = isWithinCoverageTimeframe(claim, policy);
-        boolean withCoverageAmount = isClaimWithinCoverage(claim, policy);
+        boolean withinCoverageAmount = isClaimWithinCoverage(claim, policy);
 
-        if (withinCoverageTimeframe && withCoverageAmount) {
+        if (withinCoverageTimeframe && withinCoverageAmount) {
             BigDecimal payoutAmount = calculatePayout(claim, policy);
             return new Payout(true, payoutAmount, "");
         } else if (!withinCoverageTimeframe) {

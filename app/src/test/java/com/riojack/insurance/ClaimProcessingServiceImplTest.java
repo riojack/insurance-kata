@@ -26,6 +26,8 @@ public class ClaimProcessingServiceImplTest {
     void whenAmountClaimedIsNegativeThenReturnZeroWithZeroPayoutReasonCode() {
         Claim claim = new Claim(POLICY_A_ID, "accident", CLAIM_DATE, new BigDecimal("-0.01"));
         Payout payout = service.getClaimPayout(claim);
+
+        assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
         assertEquals("ZERO_PAYOUT", payout.reasonCode());
     }
@@ -36,6 +38,7 @@ public class ClaimProcessingServiceImplTest {
         Payout payout = service.getClaimPayout(claim);
 
         BigDecimal expected = new BigDecimal("1000.00").subtract(POLICY_A.deductible());
+        assertTrue(payout.approved());
         assertEquals(expected, payout.payout());
     }
 
@@ -43,12 +46,13 @@ public class ClaimProcessingServiceImplTest {
     void whenClaimAmountIsMoreThanPolicyCoverageThenPayoutIsNotMade() {
         Claim claim = new Claim(POLICY_A_ID, "accident", CLAIM_DATE, new BigDecimal("6000.00"));
         Payout payout = service.getClaimPayout(claim);
+
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
     }
 
     @Test
-    void whenClaimIsBeforePolicyCoverageTimeframe() {
+    void whenClaimIsBeforePolicyCoverageTimeframeThenPayoutNotGiven() {
         Claim claim =
                 new Claim(
                         POLICY_A_ID,
@@ -57,12 +61,14 @@ public class ClaimProcessingServiceImplTest {
                         new BigDecimal("6000.00"));
 
         Payout payout = service.getClaimPayout(claim);
+
         assertFalse(payout.approved());
+        assertEquals(BigDecimal.ZERO, payout.payout());
         assertEquals("POLICY_INACTIVE", payout.reasonCode());
     }
 
     @Test
-    void whenClaimIsAfterPolicyCoverageTimeframe() {
+    void whenClaimIsAfterPolicyCoverageTimeframeThenPayoutNotGiven() {
         Claim claim =
                 new Claim(
                         POLICY_A_ID,
@@ -71,7 +77,9 @@ public class ClaimProcessingServiceImplTest {
                         new BigDecimal("6000.00"));
 
         Payout payout = service.getClaimPayout(claim);
+
         assertFalse(payout.approved());
+        assertEquals(BigDecimal.ZERO, payout.payout());
         assertEquals("POLICY_INACTIVE", payout.reasonCode());
     }
 }
