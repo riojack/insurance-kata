@@ -34,6 +34,8 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
             reason = "POLICY_INACTIVE";
         } else if (!isIncidentTypeCovered(claim, policy)) {
             reason = "NOT_COVERED";
+        } else if (!isPayoutWithinCoverage(payoutAmount, policy)) {
+            reason = "PAYOUT_EXCEEDS_COVERAGE";
         }
 
         return reason;
@@ -54,6 +56,10 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
 
     private static boolean isNonNegativeClaimAmount(Claim claim) {
         return claim.amountClaimed().compareTo(BigDecimal.ZERO) < 0;
+    }
+
+    private static boolean isPayoutWithinCoverage(BigDecimal payout, Policy policy) {
+        return payout.compareTo(policy.coverageLimit()) < 0;
     }
 
     private Policy getPolicy(Claim claim) {
