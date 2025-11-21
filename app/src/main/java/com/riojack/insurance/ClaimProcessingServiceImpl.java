@@ -26,9 +26,14 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
                         .get();
 
         if (claim.amountClaimed().compareTo(policy.coverageLimit()) < 0) {
-            return new Payout(true, claim.amountClaimed().add(BigDecimal.ZERO), "");
+            BigDecimal payoutAmount = calculatePayout(claim, policy);
+            return new Payout(true, payoutAmount, "");
         }
 
         return new Payout(false, BigDecimal.ZERO, "");
+    }
+
+    private static BigDecimal calculatePayout(Claim claim, Policy policy) {
+        return claim.amountClaimed().subtract(policy.deductible());
     }
 }
