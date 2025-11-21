@@ -4,6 +4,7 @@ import com.riojack.insurance.pojos.Claim;
 import com.riojack.insurance.pojos.Payout;
 import com.riojack.insurance.pojos.Policy;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ClaimProcessingServiceImpl implements ClaimProcessingService {
@@ -30,11 +31,11 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
 
         if (isNonNegativeClaimAmount(claim) || isZeroPayAmount(payoutAmount)) {
             reason = "ZERO_PAYOUT";
-        } else if (!isWithinCoverageTimeframe(claim, policy)) {
+        } else if (isOutsideCoveragePeriod(claim, policy)) {
             reason = "POLICY_INACTIVE";
-        } else if (!isIncidentTypeCovered(claim, policy)) {
+        } else if (isNonCoveredIncident(claim, policy)) {
             reason = "NOT_COVERED";
-        } else if (!isPayoutWithinCoverage(payoutAmount, policy)) {
+        } else if (isPayoutOutsideOfCoverage(payoutAmount, policy)) {
             reason = "PAYOUT_EXCEEDS_COVERAGE";
         }
 
@@ -45,21 +46,21 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
         return payoutAmount.compareTo(BigDecimal.ZERO) == 0;
     }
 
-    private static boolean isIncidentTypeCovered(Claim claim, Policy policy) {
-        return policy.coveredIncidents().contains(claim.incidentType());
+    private static boolean isNonCoveredIncident(Claim claim, Policy policy) {
+        return !policy.coveredIncidents().contains(claim.incidentType());
     }
 
-    private static boolean isWithinCoverageTimeframe(Claim claim, Policy policy) {
-        return claim.incidentDate().isAfter(policy.startDate())
-                && claim.incidentDate().isBefore(policy.endDate());
+    private static boolean isOutsideCoveragePeriod(Claim claim, Policy policy) {
+        LocalDateTime incDate = claim.incidentDate();
+        return incDate.isBefore(policy.startDate()) || incDate.isAfter(policy.endDate());
     }
 
     private static boolean isNonNegativeClaimAmount(Claim claim) {
         return claim.amountClaimed().compareTo(BigDecimal.ZERO) < 0;
     }
 
-    private static boolean isPayoutWithinCoverage(BigDecimal payout, Policy policy) {
-        return payout.compareTo(policy.coverageLimit()) < 0;
+    private static boolean isPayoutOutsideOfCoverage(BigDecimal payout, Policy policy) {
+        return payout.compareTo(policy.coverageLimit()) > 0;
     }
 
     private Policy getPolicy(Claim claim) {
