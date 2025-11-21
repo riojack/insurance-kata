@@ -20,7 +20,9 @@ public class ClaimProcessingServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        service = new ClaimProcessingServiceImpl(of(POLICY_ALL_COVERAGE, POLICY_FIRE_COVERAGE));
+        PolicyRepositoryImpl policyRepository =
+                new PolicyRepositoryImpl(of(POLICY_ALL_COVERAGE, POLICY_FIRE_COVERAGE));
+        service = new ClaimProcessingServiceImpl(policyRepository);
     }
 
     @Test
