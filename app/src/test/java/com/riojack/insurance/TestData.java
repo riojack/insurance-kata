@@ -2,6 +2,7 @@ package com.riojack.insurance;
 
 import static java.util.List.of;
 
+import com.riojack.insurance.pojos.Claim;
 import com.riojack.insurance.pojos.Policy;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,4 +19,11 @@ public class TestData {
                     new BigDecimal("500.00"),
                     new BigDecimal("5000.00"),
                     of("accident"));
+
+    public static final Claim CLAIM_A =
+            new Claim(
+                    POLICY_A_ID,
+                    "accident",
+                    POLICY_A.startDate().plusDays(15),
+                    new BigDecimal("1000.00"));
 }
