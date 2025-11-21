@@ -1,5 +1,7 @@
 package com.riojack.insurance;
 
+import static com.riojack.insurance.constants.ReasonCodes.*;
+
 import com.riojack.insurance.pojos.Claim;
 import com.riojack.insurance.pojos.Policy;
 import java.math.BigDecimal;
@@ -12,13 +14,13 @@ public class ClaimValidator {
         String reason = "";
 
         if (isNonNegativeClaimAmount(claim) || isZeroPayAmount(payoutAmount)) {
-            reason = "ZERO_PAYOUT";
+            reason = ZERO_PAYOUT;
         } else if (isOutsideCoveragePeriod(claim, policy)) {
-            reason = "POLICY_INACTIVE";
+            reason = POLICY_INACTIVE;
         } else if (isNonCoveredIncident(claim, policy)) {
-            reason = "NOT_COVERED";
+            reason = NOT_COVERED;
         } else if (isPayoutOutsideOfCoverage(payoutAmount, policy)) {
-            reason = "PAYOUT_EXCEEDS_COVERAGE";
+            reason = PAYOUT_EXCEEDS_COVERAGE;
         }
 
         return reason;

@@ -2,6 +2,7 @@ package com.riojack.insurance;
 
 import static com.riojack.insurance.TestData.*;
 import static com.riojack.insurance.TestUtils.*;
+import static com.riojack.insurance.constants.ReasonCodes.*;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +33,7 @@ public class ClaimProcessingServiceImplTest {
 
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
-        assertEquals("ZERO_PAYOUT", payout.reasonCode());
+        assertEquals(ZERO_PAYOUT, payout.reasonCode());
     }
 
     @Test
@@ -42,7 +43,7 @@ public class ClaimProcessingServiceImplTest {
 
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
-        assertEquals("ZERO_PAYOUT", payout.reasonCode());
+        assertEquals(ZERO_PAYOUT, payout.reasonCode());
     }
 
     @Test
@@ -62,7 +63,7 @@ public class ClaimProcessingServiceImplTest {
 
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
-        assertEquals("PAYOUT_EXCEEDS_COVERAGE", payout.reasonCode());
+        assertEquals(PAYOUT_EXCEEDS_COVERAGE, payout.reasonCode());
     }
 
     @Test
@@ -72,7 +73,7 @@ public class ClaimProcessingServiceImplTest {
 
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
-        assertEquals("POLICY_INACTIVE", payout.reasonCode());
+        assertEquals(POLICY_INACTIVE, payout.reasonCode());
     }
 
     @Test
@@ -82,7 +83,7 @@ public class ClaimProcessingServiceImplTest {
 
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
-        assertEquals("POLICY_INACTIVE", payout.reasonCode());
+        assertEquals(POLICY_INACTIVE, payout.reasonCode());
     }
 
     @ParameterizedTest
@@ -108,7 +109,7 @@ public class ClaimProcessingServiceImplTest {
 
         assertFalse(payout.approved());
         assertEquals(BigDecimal.ZERO, payout.payout());
-        assertEquals("NOT_COVERED", payout.reasonCode());
+        assertEquals(NOT_COVERED, payout.reasonCode());
     }
 
     private static Stream<Arguments> argsSubmittingClaimWithDifferentIncidentTypes() {
@@ -119,6 +120,6 @@ public class ClaimProcessingServiceImplTest {
                 Arguments.of("theft", true, expectedPayout, ""),
                 Arguments.of("fire", true, expectedPayout, ""),
                 Arguments.of("water damage", true, expectedPayout, ""),
-                Arguments.of("tornado", false, BigDecimal.ZERO, "NOT_COVERED"));
+                Arguments.of("tornado", false, BigDecimal.ZERO, NOT_COVERED));
     }
 }
