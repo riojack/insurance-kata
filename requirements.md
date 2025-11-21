@@ -83,7 +83,7 @@ Each claim evaluation should return a result with the following fields:
 - ✅ The policy must be active on the `incidentDate`
 - The `incidentType` must be included in the policy’s `coveredIncidents`
 - ✅ Payout = `amountClaimed - deductible`
-- If payout is zero or negative, return 0 with reasonCode: `ZERO_PAYOUT`
+- ✅ If payout is zero or negative, return 0 with reasonCode: `ZERO_PAYOUT`
 - The payout may not exceed the `coverageLimit`
 
 ---

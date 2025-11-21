@@ -17,22 +17,18 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
     public Payout getClaimPayout(Claim claim) {
         Policy policy = getPolicy(claim);
 
-        boolean approved = false;
-        BigDecimal payoutAmount = BigDecimal.ZERO;
-        String reasonCode = getReasonCode(claim, policy);
-
-        if ("".equals(reasonCode)) {
-            approved = true;
-            payoutAmount = calculatePayout(claim, policy);
-        }
+        BigDecimal payoutAmount = calculatePayout(claim, policy);
+        String reasonCode = getReasonCode(claim, policy, payoutAmount);
+        boolean approved = "".equals(reasonCode);
+        payoutAmount = approved ? payoutAmount : BigDecimal.ZERO;
 
         return new Payout(approved, payoutAmount, reasonCode);
     }
 
-    private static String getReasonCode(Claim claim, Policy policy) {
+    private static String getReasonCode(Claim claim, Policy policy, BigDecimal payoutAmount) {
         String reason = "";
 
-        if (isNonNegativeClaimAmount(claim)) {
+        if (isNonNegativeClaimAmount(claim) || isZeroPayAmount(payoutAmount)) {
             reason = "ZERO_PAYOUT";
         } else if (!isWithinCoverageTimeframe(claim, policy)) {
             reason = "POLICY_INACTIVE";
@@ -43,6 +39,10 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
         }
 
         return reason;
+    }
+
+    private static boolean isZeroPayAmount(BigDecimal payoutAmount) {
+        return payoutAmount.compareTo(BigDecimal.ZERO) == 0;
     }
 
     private static boolean isIncidentTypeCovered(Claim claim, Policy policy) {
