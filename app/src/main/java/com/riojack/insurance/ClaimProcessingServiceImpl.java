@@ -15,10 +15,6 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
 
     @Override
     public Payout getClaimPayout(Claim claim) {
-        if (isNonNegativeClaimAmount(claim)) {
-            return new Payout(false, BigDecimal.ZERO, "ZERO_PAYOUT");
-        }
-
         Policy policy = getPolicy(claim);
 
         boolean approved = false;
@@ -34,21 +30,23 @@ public class ClaimProcessingServiceImpl implements ClaimProcessingService {
     }
 
     private static String getReasonCode(Claim claim, Policy policy) {
-        boolean withinCoverageTimeframe = isWithinCoverageTimeframe(claim, policy);
-        boolean withinCoverageAmount = isClaimWithinCoverage(claim, policy);
-        boolean coveredByPolicy = policy.coveredIncidents().contains(claim.incidentType());
-
         String reason = "";
 
-        if (!withinCoverageTimeframe) {
+        if (isNonNegativeClaimAmount(claim)) {
+            reason = "ZERO_PAYOUT";
+        } else if (!isWithinCoverageTimeframe(claim, policy)) {
             reason = "POLICY_INACTIVE";
-        } else if (!coveredByPolicy) {
+        } else if (!isIncidentTypeCovered(claim, policy)) {
             reason = "NOT_COVERED";
-        } else if (!withinCoverageAmount) {
+        } else if (!isClaimWithinCoverage(claim, policy)) {
             reason = "NEED_TO_TEST_THIS";
         }
 
         return reason;
+    }
+
+    private static boolean isIncidentTypeCovered(Claim claim, Policy policy) {
+        return policy.coveredIncidents().contains(claim.incidentType());
     }
 
     private static boolean isWithinCoverageTimeframe(Claim claim, Policy policy) {
